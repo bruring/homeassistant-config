@@ -1,0 +1,39 @@
+## Scenes definition
+
+# Motion sensor controlled
+  - name: Wardrobe active
+    entities:
+      light.wardrobe_lights_22:
+        state: on
+        brightness: 255
+      light.dressing_room_lights_19:
+        state: on
+        brightness: 102
+
+  - name: Office active
+    entities:
+      light.office_lights_6:
+        state: on
+        brightness: 107
+      light.office_wall_lights_7:
+        state: on
+        brightness: 107
+
+  - name: Movie mode
+    entities:
+      light.side_lights_65:
+        state: on
+        brightness: 90
+      light.bar_lights_10:
+        state: on
+        brightness: 30
+      light.living_lights_9:
+        state: on
+        brightness: 32
+      light.kitchen_lights:
+        state: off
+      light.office_lights_6:
+        state: on
+        brightness: 10
+      light.office_wall_lights_7:
+        state: off

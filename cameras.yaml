@@ -1,0 +1,24 @@
+##############################################
+## Cameras
+##############################################
+
+  - platform: mjpeg
+    mjpeg_url: !secret camera_vls12_url
+    name: VLS12
+    username: !secret camera_username
+    password: !secret camera_password
+    authentication: basic
+  - platform: mjpeg
+    mjpeg_url: !secret camera_index_url
+    name: Cams
+    username: !secret camera_username
+    password: !secret camera_password
+    authentication: basic
+  - platform: mjpeg
+    mjpeg_url: !secret camera_office_url
+    name: Office
+    username: !secret camera_username
+    password: !secret camera_password
+    authentication: basic
+  - platform: proxy
+    entity_id: camera.Office

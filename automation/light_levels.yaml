@@ -1,0 +1,47 @@
+#################################################################
+## Connect Zigbee lights with Zwave light automation (temporary)
+#################################################################
+
+  - alias: Turn Ikea couch light on
+    trigger:
+      platform: state
+      entity_id: light.side_lights_65
+      to: 'on'
+    action:
+      - service: homeassistant.turn_on
+        entity_id: light.couch_light
+        data:
+          brightness: 6
+          color_temp: 454
+
+  - alias: Turn Ikea couch light off
+    trigger:
+      platform: state
+      entity_id: light.side_lights_65
+      to: 'off'
+
+    action:
+      - service: homeassistant.turn_off
+        entity_id: light.couch_light
+
+
+  - alias: Turn Ikea desk light on
+    trigger:
+      platform: state
+      entity_id: light.office_lights_6
+      to: 'on'
+    action:
+      - service: homeassistant.turn_on
+        entity_id: light.desk
+        data:
+          brightness: 204
+
+  - alias: Turn Ikea desk light off
+    trigger:
+      platform: state
+      entity_id: light.office_lights_6
+      to: 'off'
+
+    action:
+      - service: homeassistant.turn_off
+        entity_id: light.desk

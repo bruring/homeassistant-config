@@ -1,0 +1,318 @@
+##############################################
+## Sensors
+##############################################
+
+  # DSMR Slimme Meter https://www.home-assistant.io/components/dsmr/
+  - platform: dsmr
+
+  # Thermal comfort
+  - platform: thermal_comfort
+    sensors:
+      basement:
+        friendly_name: Basement
+        temperature_sensor: sensor.basement_temperature_461
+        humidity_sensor: sensor.basement_humidity_463
+      living:
+        friendly_name: Living
+        temperature_sensor: sensor.living_temperature_452
+        humidity_sensor: sensor.living_humidity_454
+      mbedroom:
+        friendly_name: Master Bedroom
+        temperature_sensor: sensor.m_bedroom_temp_510
+        humidity_sensor: sensor.m_bedroom_humidity_508
+      office:
+        friendly_name: Office
+        temperature_sensor: sensor.office_temperature_470
+        humidity_sensor: sensor.office_humidity_472
+
+  # Basement absolute humidity vs office absolute humidity sensor
+  - platform: template
+    sensors:
+      basement_minus_office_humidity:
+        friendly_name: 'Basement minus Office humidity'
+        value_template: '{{ (states.sensor.basement_absolutehumidity.state | float - states.sensor.office_absolutehumidity.state | float)  }}'
+        unit_of_measurement: 'g/m³'
+
+  # Post NL
+  - platform: postnl
+    username: !secret postnl_username
+    password: !secret postnl_password
+
+  # 17 track
+  - platform: seventeentrack
+    username: !secret 17track_username
+    password: !secret 17track_password
+
+  # Zwift
+  - platform: zwift
+    username: !secret zwift_username
+    password: !secret zwift_password
+
+  # Garmin Connect
+  - platform: garmin_connect
+    username: !secret garmin_username 
+    password: !secret garmin_password
+
+  # Darksky
+  - platform: darksky
+    api_key: !secret darksky_key
+    forecast:
+      - 0
+    hourly_forecast:
+      - 0
+      - 1
+    monitored_conditions:
+      - precip_intensity
+      - precip_probability
+      - temperature
+      - apparent_temperature
+      - wind_speed
+      - moon_phase
+      - cloud_cover
+
+  # Battery levels
+  ## Motion Sensors
+  - platform: template
+    sensors:
+      dressing_motion_sensor_batt:
+        value_template: '{{ states.binary_sensor.dressing_motion_498.attributes.battery_level }}'
+        friendly_name: 'Dressing Motion Sensor'
+        unit_of_measurement: '%'
+        device_class: battery
+
+  - platform: template
+    sensors:
+      living_motion_sensor_batt:
+        value_template: '{{ states.binary_sensor.living_motion_sensor_451.attributes.battery_level }}'
+        friendly_name: 'Living Motion Sensor'
+        unit_of_measurement: '%'
+        device_class: battery
+
+  - platform: template
+    sensors:
+      m_bedroom_motion_sensor_batt:
+        value_template: '{{ states.binary_sensor.m_bedroom_motion_507.attributes.battery_level }}'
+        friendly_name: 'Master Bedroom Motion Sensor'
+        unit_of_measurement: '%'
+        device_class: battery
+
+  - platform: template
+    sensors:
+      office_motion_sensor_batt:
+        value_template: '{{ states.binary_sensor.office_motion_sensor_469.attributes.battery_level }}'
+        friendly_name: 'Office Motion Sensor'
+        unit_of_measurement: '%'
+        device_class: battery
+
+  - platform: template
+    sensors:
+      salon_motion_sensor_batt:
+        value_template: '{{ states.binary_sensor.salon_motion_538.attributes.battery_level }}'
+        friendly_name: 'Salon Motion Sensor'
+        unit_of_measurement: '%'
+        device_class: battery
+
+  ## Door Sensors
+  - platform: template
+    sensors:
+      office_door_sensor_batt:
+        value_template: '{{ states.binary_sensor.office_door_sensor_85.attributes.battery_level }}'
+        friendly_name: 'Office Door Sensor'
+        unit_of_measurement: '%'
+        device_class: battery
+
+  - platform: template
+    sensors:
+      cat_door_sensor_batt:
+        value_template: '{{ states.sensor.cat_door_main_522.attributes.battery_level }}'
+        friendly_name: 'Cat Door Sensor'
+        unit_of_measurement: '%'
+        device_class: battery
+
+  - platform: template
+    sensors:
+      garden_door_sensor_batt:
+        value_template: '{{ states.binary_sensor.garden_door_238.attributes.battery_level }}'
+        friendly_name: 'Garden Door Sensor'
+        unit_of_measurement: '%'
+        device_class: battery
+
+  - platform: template
+    sensors:
+      salon_door_main_sensor_batt:
+        value_template: '{{ states.sensor.salon_door_main_191.attributes.battery_level }}'
+        friendly_name: 'Salon Door Sensor'
+        unit_of_measurement: '%'
+        device_class: battery
+
+  # Switches
+  - platform: template
+    sensors:
+      dressing_room_switch_batt:
+        value_template: '{{ states.sensor.dressing_room_switch_127.attributes.battery_level }}'
+        friendly_name: 'Dressing Room Switch'
+        unit_of_measurement: '%'
+        device_class: battery
+
+  - platform: template
+    sensors:
+      guest_bedroom_switch_batt:
+        value_template: '{{ states.sensor.guest_bedroom_switch_132.attributes.battery_level }}'
+        friendly_name: 'Guest Bedroom Switch'
+        unit_of_measurement: '%'
+        device_class: battery
+
+  - platform: template
+    sensors:
+      kitchen_wc_switch_batt:
+        value_template: '{{ states.sensor.kitchen_wc_switch_71.attributes.battery_level }}'
+        friendly_name: 'Kitchen WC Switch'
+        unit_of_measurement: '%'
+        device_class: battery
+
+  - platform: template
+    sensors:
+      living_switch_batt:
+        value_template: '{{ states.sensor.living_switch_67.attributes.battery_level }}'
+        friendly_name: 'Living Switch'
+        unit_of_measurement: '%'
+        device_class: battery
+
+  - platform: template
+    sensors:
+      office_switch_batt:
+        value_template: '{{ states.sensor.office_switch_121.attributes.battery_level }}'
+        friendly_name: 'Office Switch'
+        unit_of_measurement: '%'
+        device_class: battery
+
+  - platform: template
+    sensors:
+      salon_switch_batt:
+        value_template: '{{ states.sensor.salon_switch_170.attributes.battery_level }}'
+        friendly_name: 'Salon Switch'
+        unit_of_measurement: '%'
+        device_class: battery
+
+  - platform: template
+    sensors:
+      wardrobe_switch_batt:
+        value_template: '{{ states.sensor.wardrobe_switch_129.attributes.battery_level }}'
+        friendly_name: 'Wardrobe Switch'
+        unit_of_measurement: '%'
+        device_class: battery
+
+  # Keypads
+  - platform: template
+    sensors:
+      office_keypad_batt:
+        value_template: '{{ states.switch.office_door_keypad_74.attributes.battery_level }}'
+        friendly_name: 'Office Keypad'
+        unit_of_measurement: '%'
+        device_class: battery
+
+  - platform: template
+    sensors:
+      salon_keypad_batt:
+        value_template: '{{ states.switch.salon_door_keypad_174.attributes.battery_level }}'
+        friendly_name: 'Office Keypad'
+        unit_of_measurement: '%'
+        device_class: battery
+
+  # Others
+  - platform: template
+    sensors:
+      joris_galaxy_batt:
+        value_template: '{{ states.device_tracker.joris_samsunggalaxy.attributes.battery_level }}'
+        friendly_name: 'Joris phone'
+        unit_of_measurement: '%'
+        device_class: battery
+
+  - platform: template
+    sensors:
+      murielle_iphone_batt:
+        value_template: '{{ states.device_tracker.joris_samsunggalaxy.attributes.battery_level }}'
+        friendly_name: 'Joris phone'
+        unit_of_measurement: '%'
+        device_class: battery
+
+  # Is it dark outside?
+  - platform: template
+    sensors:
+      sunlight_pct:
+        friendly_name: 'Sunlight percentage'
+        entity_id:
+          - sun.sun
+          - sensor.dark_sky_cloud_coverage
+        value_template: >-
+          {%- set elevation = state_attr('sun.sun','elevation') | float %}
+          {%- set cloud_coverage = states('sensor.dark_sky_cloud_coverage') | float %}
+          {%- set cloud_factor = (1 - (0.75 * ( cloud_coverage / 100) ** 3 )) %}
+          {%- set min_elevation = -6 %}
+          {%- set max_elevation = 60 %}
+          {%- set adjusted_elevation = elevation - min_elevation %}
+          {%- set adjusted_elevation = [adjusted_elevation,0] | max %}
+          {%- set adjusted_elevation = [adjusted_elevation,max_elevation - min_elevation] | min %}
+          {%- set adjusted_elevation = adjusted_elevation / (max_elevation - min_elevation) %}
+          {%- set adjusted_elevation = adjusted_elevation %}
+          {%- set adjusted_elevation = adjusted_elevation * 100 %}
+          {%- set brightness = adjusted_elevation * cloud_factor %}
+          {{ brightness | round }}
+        unit_of_measurement: '%'
+        device_class: 'illuminance'
+
+  # Some nice statistics
+  - platform: history_stats
+    name: Cat door usage
+    entity_id: binary_sensor.cat_door_525
+    state: 'on'
+    type: count
+    start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+    end: '{{ now() }}'
+
+  - platform: statistics
+    name: Cat door usage statistics
+    entity_id: binary_sensor.cat_door_525
+
+  - platform: history_stats
+    name: Garden door usage
+    entity_id: binary_sensor.garden_door_238
+    state: 'on'
+    type: count
+    start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+    end: '{{ now() }}'
+
+  - platform: history_stats
+    name: Coffees
+    entity_id: switch.coffee_machine_379
+    state: 'on'
+    type: count
+    start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+    end: '{{ now() }}'
+
+  - platform: history_stats
+    name: Television hours
+    entity_id: switch.tvaudio_545
+    state: 'on'
+    type: time
+    start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+    end: '{{ now() }}'
+
+  - platform: min_max
+    name: Average Light Level
+    type: last
+    entity_ids:
+      - sensor.office_light_sensor_471
+      - sensor.living_light_sensor_453
+      - sensor.dressing_light_504
+      - sensor.salon_light_1_540
+
+  - platform: average
+    name: 'Average Light Level new'
+    duration:
+      minutes: 5
+    entities:
+      - sensor.office_light_sensor_471
+      - sensor.living_light_sensor_453
+      - sensor.dressing_light_504
+      - sensor.salon_light_1_540

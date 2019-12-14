@@ -1,0 +1,79 @@
+play_music:
+  alias: Play Spotify on home group
+  sequence:
+  - service: spotcast.start
+    data:
+      device_name: "Home group"
+      uri: "spotify:playlist:3rIRPguVt95QoLoxroLx9x"
+  - service: spotcast.start
+    data:
+      device_name: "Home group"
+      uri: "spotify:playlist:3rIRPguVt95QoLoxroLx9x"
+
+play_music_discover:
+  alias: Play Spotify on home group, Discover Weekly playlist
+  sequence:
+  - service: spotcast.start
+    data:
+      device_name: "Home group"
+      uri: "spotify:playlist:37i9dQZEVXcXBor995EVsM"
+  - service: spotcast.start
+    data:
+      device_name: "Home group"
+      uri: "spotify:playlist:37i9dQZEVXcXBor995EVsM"
+
+play_music_topnl:
+  alias: Play Spotify on home group, Top Hits NL playlist
+  sequence:
+  - service: spotcast.start
+    data:
+      device_name: "Home group"
+      uri: "spotify:playlist:37i9dQZF1DWSBi5svWQ9Nk"
+  - service: spotcast.start
+    data:
+      device_name: "Home group"
+      uri: "spotify:playlist:37i9dQZF1DWSBi5svWQ9Nk"
+
+play_music_muk:
+  alias: Play Spotify on home group, Murielle Starred playlist
+  sequence:
+  - service: spotcast.start
+    data:
+      device_name: "Home group"
+      uri: "spotify:playlist:6GKm1sOB2UZNIjPOu8k16f"
+  - service: spotcast.start
+    data:
+      device_name: "Home group"
+      uri: "spotify:playlist:6GKm1sOB2UZNIjPOu8k16f"
+
+stop_music:
+  alias: Stop Spotify on home group
+  sequence:
+  - service: media_player.media_pause
+    data:
+      entity_id: media_player.spotify
+
+add_to_playlist:
+  alias: Add Spotify Track to Favorites Playlist
+  sequence:
+  - service: rest_command.spotify_add_to_favorites
+#  - service: notify.joris
+#    data:
+#      message: '{"uris":["{{ state_attr("media_player.spotify", "media_content_id") }}"]}'
+
+all_lights_on:
+  alias: Turn all lights on
+  sequence:
+  - service: scene.turn_on
+    entity_id: scene.lightsnewhouseondim
+  - service: scene.turn_on
+    entity_id: scene.lightsoldhouseondim
+
+all_lights_off:
+  alias: Turn all lights off
+  sequence:
+  - service: scene.turn_on
+    entity_id: scene.lightsnewhouseoff
+  - service: scene.turn_on
+    entity_id: scene.lightsoldhouseoff
+  - service: script.stop_music

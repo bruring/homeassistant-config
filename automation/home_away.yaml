@@ -1,0 +1,40 @@
+#################################################################
+## Home / Away transition automations
+#################################################################
+
+  # When entering the home when it's evening (HomeZoneEnter)
+  - alias: Turn on lights when coming home when it's evening
+    trigger:
+      platform: state
+      entity_id: input_select.house_mode
+      from: 'away'
+      to: 'home'
+    condition:
+      - condition: state
+        entity_id: input_boolean.evening_mode
+        state: 'on'
+    action:
+      - service: light.turn_on
+        entity_id:
+          - light.living_lights
+          - light.office_lights
+          - light.kitchen_lights
+          - light.salon_lights
+          - light.wardrobe_lights
+          - light.garden_lights
+
+  # When leaving the home (HomeZoneLeave) // interesting because when it's night we have to keep some lights on and use timers etc.
+#  - alias: Turn off lights and equipment when leaving the house
+#    trigger:
+#      platform: state
+#      entity_id: input_select.house_mode
+#      to: 'away'
+#    action:
+#      - service: light.turn_off
+#        entity_id:
+#          - light.living_lights
+#          - light.office_lights
+#          - light.kitchen_lights
+#          - light.salon_lights
+#          - light.wardrobe_lights
+#          - light.garden_lights

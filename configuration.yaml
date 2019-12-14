@@ -1,0 +1,285 @@
+##############################################
+# Home Assistant Core
+# Joris Bruring <joris@bruring.net>
+# Inspiration from https://github.com/geekofweek/homeassistant
+##############################################
+
+homeassistant:
+  name: VLS
+  latitude: !secret latitude
+  longitude: !secret longitude
+  elevation: !secret elevation
+  unit_system: metric
+  time_zone: !secret time_zone
+
+http:
+  base_url: !secret base_url
+  server_port: 443
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.20.1.1
+  ip_ban_enabled: true
+  login_attempts_threshold: 5
+  ssl_certificate: "/ssl/fullchain.pem"
+  ssl_key: "/ssl/privkey.pem"
+
+cloud:
+config:
+conversation:
+discovery:
+frontend:
+history:
+ios:
+logbook:
+map:
+mobile_app:
+person:
+sun:
+system_health:
+zeroconf:
+
+##############################################
+# Components
+##############################################
+
+vera:
+  vera_controller_url: http://172.20.2.20:3480/
+  exclude: [2, 516, 520, 521, 531, 532, 533, 548, 550, 39, 40, 42, 557, 73, 155, 157, 483, 549, 227, 228, 229, 487, 488, 490, 491, 38, 551]
+  lights: [6, 7, 22, 65, 401, 419, 165, 180, 546, 9, 10, 19, 20, 26, 218, 489]
+
+tradfri:
+  host: 172.20.1.140
+
+media_player:
+  - platform: spotify
+    client_id: !secret spotify_client_id
+    client_secret: !secret spotify_client_secret
+
+netatmo:
+  api_key: !secret netatmo_api_key
+  secret_key: !secret netatmo_secret_key
+  username: !secret netatmo_username
+  password: !secret netatmo_password
+
+tado:
+  username: !secret tado_username
+  password: !secret tado_password
+
+tts:
+  - platform: google_translate
+
+recorder:
+  db_url: !secret recorder_db_url
+  purge_keep_days: 178
+
+influxdb:
+  host: 172.20.1.20
+  port: 8086
+  database: homeassistant
+  username: !secret influxdb_username
+  password: !secret influxdb_password
+  max_retries: 3
+  default_measurement: state
+
+hacs:
+  token: !secret hacs_token
+
+spotcast:
+  username: !secret spotcast_username
+  password: !secret spotcast_password
+
+binary_sensor:
+  - platform: ping
+    host: !secret tado_host
+    name: Tado
+    scan_interval: 20
+  - platform: ping
+    host: !secret vera_host
+    name: Vera Main
+    scan_interval: 20
+  - platform: ping
+    host: !secret veralite_host
+    name: Vera Lite
+    scan_interval: 20
+  - platform: ping
+    host: !secret tps_host
+    name: TPS VPN Tunnel
+    scan_interval: 20
+  - platform: ping
+    host: !secret tv_host
+    scan_interval: 10
+    name: Living TV
+  - platform: workday
+    name: Next Day Workday Sensor
+    country: NL
+    workdays: [mon,tue,wed,thu,fri]
+    days_offset: 1
+  - platform: workday
+    country: NL
+    workdays: [mon,tue,wed,thu,fri]
+
+remote: 
+  - platform: harmony
+    name: living
+    host: 172.20.1.35
+
+stream:
+
+notify:
+#  - name: joris
+#    platform: html5
+#    vapid_pub_key: !secret notify_joris_pub_key
+#    vapid_prv_key: !secret notify_joris_priv_key
+#    vapid_email: joris@bruring.net
+  - name: joris
+    platform: pushover
+    api_key: !secret pushover_joris_api_key
+    user_key: !secret pushover_joris_user_key
+
+rest_command:
+  spotify_add_to_favorites:
+    url: https://api.spotify.com/v1/playlists/1kHUU2EYl6UpcK6BN4f7rp/tracks
+    method: POST
+    headers:
+      authorization: !secret spotify_bearer
+      accept: 'application/json'
+    payload: '{"uris":["{{ state_attr("media_player.spotify", "media_content_id") }}"]}'
+    content_type:  'application/json; charset=utf-8'
+    verify_ssl: true
+
+  assistant_broadcast:
+    url: http://localhost:3000/assistant
+    method: POST
+    content_type: 'application/json; charset=utf-8'
+    payload: '{"command":"{{ command }}", "broadcast":true}'
+
+  assistant_relay:
+    url: http://localhost:3000/assistant
+    method: POST
+    content_type: 'application/json; charset=utf-8'
+    payload: '{"command":"{{ command }}"}'
+
+# Sidebar
+panel_iframe:
+  grafana:
+    title: 'Grafana'
+    url: !secret grafana_url
+    icon: mdi:graphql
+    require_admin: true
+
+# Home status (Vera thing) input select
+input_select:
+  house_mode:
+    name: House mode
+    options:
+      - "home"
+      - "away"
+      - "night"
+      - "vacation"
+    icon: mdi:home
+
+  house_mode_changedby:
+    name: House mode history
+    options:
+      - "Joris armed"
+      - "Joris disarmed"
+      - "Murielle armed"
+      - "Murielle disarmed"
+      - "PIN armed"
+      - "PIN disarmed"
+      - "Extraset armed"
+      - "Extraset disarmed"
+      - "Erik armed"
+      - "Erik disarmed"
+      - "Extra armed"
+      - "Extra disarmed"
+
+# Input Text definitions
+input_text:
+  uber_status:
+    name: Uber Status
+
+# Input booleans
+input_boolean:
+  dark_outside:
+    name: Dark outside
+    icon: mdi:weather-sunset
+
+  dark_inside:
+    name: Dark inside
+    icon: mdi:theme-light-dark
+
+  evening_mode:
+    name: Evening mode
+    icon: mdi:weather-night
+
+  bedjes:
+    name: Bedjes samen
+    icon: mdi:bed-empty
+
+alarm_control_panel:
+  - platform: manual
+    name: Alarm
+    code_arm_required: false
+    pending_time: 1
+    disarmed:
+      trigger_time: 0
+
+# Google Assistant integration
+google_assistant:
+  project_id: !secret google_assistant_id
+  api_key: !secret google_assistant_key
+  exposed_domains:
+    - camera
+    - input_boolean
+    - scene
+    - script
+    - light
+    - fan
+  entity_config:
+    light.office_lights:
+      expose: false
+    light.salon_lights:
+      expose: false
+    light.kitchen_lights:
+      expose: false
+    light.garden_lights:
+      expose: false
+    light.living_lights:
+      expose: false
+    light.wardrobe_lights:
+      expose: false
+    input_boolean.bedjes:
+      expose: true
+      aliases:
+        - bed
+        - bedje
+    switch.coffee_machine_379:
+      expose: true
+      aliases:
+        - coffee
+        - coffee_machine
+
+# Dark Sky
+weather:
+  - platform: darksky
+    api_key: !secret darksky_key
+
+# Enable proximity sensor
+proximity:
+  home:
+    devices:
+      - device_tracker.joris_samsunggalaxy
+      - device_tracker.iphone_van_murielle
+    tolerance: 50
+    unit_of_measurement: km
+
+## Includes
+automation: !include_dir_merge_list automation
+group: !include groups.yaml
+script: !include scripts.yaml
+sensor: !include sensors.yaml
+zone: !include zones.yaml
+light: !include light_group.yaml
+camera: !include cameras.yaml
+scene: !include scenes.yaml

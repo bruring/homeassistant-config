@@ -1,0 +1,54 @@
+#################################################################
+## Light Groups
+#################################################################
+
+  - platform: group
+    name: Living Lights
+    entities:
+      - light.bar_lights_10
+      - light.living_couch_light_419
+      - light.living_lights_9
+      - light.living_window_lights_218
+      - light.side_lights_65
+      - light.bar_lights_10
+
+  - platform: group
+    name: Salon Lights
+    entities:
+      - light.salon_light_489
+      - light.cupola_light_165
+      - light.hallway_lights_401
+
+  - platform: group
+    name: Kitchen Lights
+    entities:
+      - light.kitchen_lights_26
+      - light.main_light_486
+
+  - platform: group
+    name: Office Lights
+    entities:
+      - light.office_lights_6
+      - light.office_wall_lights_7
+      - light.desk
+
+  - platform: group
+    name: Wardrobe Lights
+    entities:
+      - light.wardrobe_lights_22
+      - light.dressing_room_lights_19
+
+  - platform: group
+    name: Garden Lights
+    entities:
+      - light.garden_lights_180
+
+  - platform: group
+    name: Master Bedroom Lights
+    entities:
+      - light.master_bedroom_light_546
+
+  - platform: group
+    name: Guest Bedroom Lights
+    entities:
+      - light.gues_bedroom_light_20

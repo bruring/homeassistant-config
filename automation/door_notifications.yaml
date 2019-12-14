@@ -1,0 +1,23 @@
+#################################################################
+## Door opened notifications
+#################################################################
+
+  - alias: 'Door open notification'
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.garden_door_238
+          - binary_sensor.salon_door_sensor_192
+          - binary_sensor.office_door_sensor_85
+        from: 'off'
+        to: 'on'
+    action:
+      - service: notify.joris
+        data_template:
+          message: '{{ trigger.from_state.attributes.friendly_name }} House mode: {{ states.input_select.house_mode.state }}'
+        data:
+          title: 'Door opened'
+      - service: notify.ios_iphone_van_murielle
+        data_template:
+          title: 'Door opened'
+          message: '{{ trigger.from_state.attributes.friendly_name }} House mode: {{ states.input_select.house_mode.state }}'

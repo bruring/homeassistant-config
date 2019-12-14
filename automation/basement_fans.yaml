@@ -1,0 +1,59 @@
+#################################################################
+## Basement fan controller
+#################################################################
+
+# Start ventilating
+
+  - alias: Turn on basement fans
+    trigger:
+      platform: numeric_state
+      entity_id: sensor.basement_minus_office_humidity
+      above: 0.8
+      for:
+        minutes: 5
+    condition:
+      condition: or
+      conditions:
+        - condition: state
+          entity_id: input_select.house_mode
+          state: 'away'
+        - condition: time
+          after: '01:00:00'
+          before: '08:00:00'
+    action:
+      - service: light.turn_on
+        entity_id:
+          - light.basement_fans_240
+
+  - alias: Turn off basement fans when threshold reached
+    trigger:
+      platform: numeric_state
+      entity_id: sensor.basement_minus_office_humidity
+      below: 0.8
+    action:
+      - service: light.turn_off
+        entity_id:
+          - light.basement_fans_240
+
+  - alias: Turn off basement fans when home at certain times
+    trigger:
+      platform: time
+      at: '09:10:00'
+    condition:
+      - condition: state
+        entity_id: input_select.house_mode
+        state: 'home'
+    action:
+      - service: light.turn_off
+        entity_id:
+          - light.basement_fans_240
+
+  - alias: Turn off basement fans when coming home
+    trigger:
+      platform: state
+      entity_id: input_select.house_mode
+      to: "home"
+    action:
+      - service: light.turn_off
+        entity_id:
+          - light.basement_fans_240

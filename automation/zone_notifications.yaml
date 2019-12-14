@@ -1,0 +1,75 @@
+#################################################################
+## Zone notifications
+#################################################################
+
+# Notify when Muk leaves Work
+  - alias: 'Leave Work notification'
+    trigger:
+      platform: zone
+      event: leave
+      zone: zone.work
+      entity_id: device_tracker.iphone_van_murielle
+    action:
+      service: notify.joris
+      data:
+        title: 'HA'
+        message: 'Muk left Work'
+
+# Notify when Joris leaves studio
+  - alias: 'Leave Studio notification'
+    trigger:
+      platform: zone
+      event: leave
+      zone: zone.studio
+      entity_id: person.joris_bruring
+    action:
+      - service: notify.joris
+        data:
+          title: 'HA'
+          message: 'Joris left Studio'
+      - service: notify.ios_iphone_van_murielle
+        data:
+          title: 'HA'
+          message: 'Joris left Studio'
+
+# Doorbell
+  - alias: 'Notify ringing doorbell'
+    trigger:
+      platform: state
+      entity_id: binary_sensor.doorbell
+      from: "off"
+      to: "on"
+    action:
+      - service: notify.joris
+        data:
+          title: 'Doorbell'
+          message: "Office doorbell ringing!"
+      - service: notify.ios_iphone_van_murielle
+        data:
+          title: 'Doorbell'
+          message: "Office doorbell ringing!"
+      - service: rest_command.assistant_broadcast
+        data:
+          command: Office doorbell ringing
+          user: joris@bruring.net
+#      - service: tts.google_translate_say
+#        entity_id: media_player.home_group
+#        data:
+#          message: 'Office doorbell ringing!'
+
+# Notify when bedjes are on
+  - alias: 'Notify when Bedjes are on'
+    trigger:
+      platform: state
+      entity_id: input_boolean.bedjes
+      from: 'off'
+      to: 'on'
+    action:
+      - service: notify.joris
+        data:
+          title: 'Bedje'
+          message: "Turned bedjes on"
+      - service: notify.ios_iphone_van_murielle
+        data:
+          title: 'Bedje'
+          message: "Turned bedjes on"

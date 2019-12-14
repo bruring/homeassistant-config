@@ -1,0 +1,23 @@
+  - id: uber_notification
+    alias: Send Uber arrival notification
+    trigger:
+    - event_data:
+        action: set_value
+      event_type: ifttt_webhook_received
+      platform: event
+    action:
+      - service: input_text.set_value
+        data_template:
+          entity_id: '{{ trigger.event.data.entity_id }}'
+          value: '{{ trigger.event.data.value }}'
+
+  - id: uber_notification_tts
+    alias: Play Uber arrival notification over Google Home speakers
+    trigger:
+      platform: state
+      entity_id: input_text.uber_status
+    action:
+      - service: tts.google_translate_say
+        entity_id: media_player.home_group
+        data_template:
+          message: "{{ states.input_text.uber_status.state }}"
