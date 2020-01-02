@@ -5,7 +5,7 @@
   - alias: Turn on dressing and wardrobe lights when there is movement
     trigger:
       platform: state
-      entity_id: binary_sensor.dressing_motion_498
+      entity_id: binary_sensor.dressing_motion_575
       to: 'on'
     condition:
       condition: and
@@ -23,7 +23,7 @@
   - alias: Dim dressing and wardrobe lights 5 minutes after last movement when evening mode is on
     trigger:
       platform: state
-      entity_id: binary_sensor.dressing_motion_498
+      entity_id: binary_sensor.dressing_motion_575
       to: 'off'
       for:
         minutes: 5
@@ -40,7 +40,7 @@
   - alias: Turn off dressing and wardrobe lights 5 minutes after last movement during day or night
     trigger:
       platform: state
-      entity_id: binary_sensor.dressing_motion_498
+      entity_id: binary_sensor.dressing_motion_575
       to: 'off'
       for:
         minutes: 5

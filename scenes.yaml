@@ -8,7 +8,7 @@
         brightness: 255
       light.dressing_room_lights_19:
         state: on
-        brightness: 102
+        brightness: 200
 
   - name: Office active
     entities:

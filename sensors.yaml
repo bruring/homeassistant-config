@@ -10,12 +10,12 @@
     sensors:
       basement:
         friendly_name: Basement
-        temperature_sensor: sensor.basement_temperature_461
-        humidity_sensor: sensor.basement_humidity_463
+        temperature_sensor: sensor.basement_temp_571
+        humidity_sensor: sensor.basement_humidity_573
       living:
         friendly_name: Living
-        temperature_sensor: sensor.living_temperature_452
-        humidity_sensor: sensor.living_humidity_454
+        temperature_sensor: sensor.living_temperature_585
+        humidity_sensor: sensor.living_humidity_587
       mbedroom:
         friendly_name: Master Bedroom
         temperature_sensor: sensor.m_bedroom_temp_510
@@ -33,10 +33,17 @@
         value_template: '{{ (states.sensor.basement_absolutehumidity.state | float - states.sensor.office_absolutehumidity.state | float)  }}'
         unit_of_measurement: 'g/m³'
 
-  # Post NL
-  - platform: postnl
-    username: !secret postnl_username
-    password: !secret postnl_password
+  # Post NL - disabled for now as PostNL is changing it's API the whole time
+  #- platform: postnl
+  #  username: !secret postnl_username
+  #  password: !secret postnl_password
+  
+  # p2000 calamities sensor (1 km radius from home)
+  - platform: p2000
+    regios: 13
+    disciplines: 1,2,3,4
+    radius: 1000
+    scan_interval: 60
 
   # 17 track
   - platform: seventeentrack
@@ -75,7 +82,7 @@
   - platform: template
     sensors:
       dressing_motion_sensor_batt:
-        value_template: '{{ states.binary_sensor.dressing_motion_498.attributes.battery_level }}'
+        value_template: '{{ states.binary_sensor.dressing_motion_575.attributes.battery_level }}'
         friendly_name: 'Dressing Motion Sensor'
         unit_of_measurement: '%'
         device_class: battery
@@ -83,7 +90,7 @@
   - platform: template
     sensors:
       living_motion_sensor_batt:
-        value_template: '{{ states.binary_sensor.living_motion_sensor_451.attributes.battery_level }}'
+        value_template: '{{ states.binary_sensor.living_motion_584.attributes.battery_level }}'
         friendly_name: 'Living Motion Sensor'
         unit_of_measurement: '%'
         device_class: battery
@@ -223,15 +230,7 @@
   - platform: template
     sensors:
       joris_galaxy_batt:
-        value_template: '{{ states.device_tracker.joris_samsunggalaxy.attributes.battery_level }}'
-        friendly_name: 'Joris phone'
-        unit_of_measurement: '%'
-        device_class: battery
-
-  - platform: template
-    sensors:
-      murielle_iphone_batt:
-        value_template: '{{ states.device_tracker.joris_samsunggalaxy.attributes.battery_level }}'
+        value_template: '{{ states.device_tracker.sm_g965f.attributes.battery_level }}'
         friendly_name: 'Joris phone'
         unit_of_measurement: '%'
         device_class: battery
@@ -303,8 +302,8 @@
     type: last
     entity_ids:
       - sensor.office_light_sensor_471
-      - sensor.living_light_sensor_453
-      - sensor.dressing_light_504
+      - sensor.living_light_586
+      - sensor.dressing_light_577
       - sensor.salon_light_1_540
 
   - platform: average
@@ -313,6 +312,6 @@
       minutes: 5
     entities:
       - sensor.office_light_sensor_471
-      - sensor.living_light_sensor_453
-      - sensor.dressing_light_504
+      - sensor.living_light_586
+      - sensor.dressing_light_577
       - sensor.salon_light_1_540

@@ -6,7 +6,7 @@
     trigger:
       platform: numeric_state
       entity_id: sensor.sunlight_pct
-      below: 32
+      below: 15
       for:
         minutes: 4
     action:
@@ -17,7 +17,7 @@
     trigger:
       platform: numeric_state
       entity_id: sensor.sunlight_pct
-      above: 32
+      above: 15
       for:
         minutes: 4
     action:
@@ -27,8 +27,8 @@
   - alias: Set dark inside on
     trigger:
       platform: numeric_state
-      entity_id: sensor.average_light_level
-      below: 100
+      entity_id: sensor.average_light_level_new
+      below: 40
       for:
         minutes: 4
     action:
@@ -39,7 +39,7 @@
     trigger:
       platform: numeric_state
       entity_id: sensor.average_light_level
-      above: 100
+      above: 40
       for:
         minutes: 4
     action:
@@ -63,10 +63,10 @@
       - service: input_boolean.turn_off
         entity_id: input_boolean.evening_mode
 
-  - alias: Turn on lights when it's dark outside
+  - alias: Turn on lights when it's dark inside
     trigger:
       platform: state
-      entity_id: input_boolean.dark_outside
+      entity_id: input_boolean.dark_inside
       to: 'on'
     condition:
       - condition: state
@@ -88,7 +88,7 @@
   - alias: Turn off lights when it's light outside and evening mode is off
     trigger:
       platform: state
-      entity_id: input_boolean.dark_outside
+      entity_id: input_boolean.dark_inside
       to: 'off'
     condition:
       - condition: state

@@ -1,0 +1,11 @@
+  - alias: 'P2000 Bericht'
+    trigger:
+      platform: state
+      entity_id: sensor.p2000
+    action:
+      - service_template: notify.joris
+        data_template:
+          title: "P2000"
+          message: "{{ states.sensor.p2000.state}}"
+          data:
+            url: "https://www.google.com/maps/search/?api=1&query={{ states.sensor.p2000.attributes.latitude }},{{ states.sensor.p2000.attributes.longitude }}"
