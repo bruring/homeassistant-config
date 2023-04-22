@@ -1,0 +1,60 @@
+#################################################################
+## Motion sensor controlled lights
+#################################################################
+
+  - alias: Turn on dressing and wardrobe lights when there is movement
+    trigger:
+      platform: state
+      entity_id: binary_sensor.dressing_motion
+      to: 'on'
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: input_select.house_mode
+          state: 'home'
+        - condition: time
+          before: '01:00:00'
+          after: '07:00:00'
+    action:
+      service: scene.turn_on
+      entity_id: scene.wardrobe_active
+
+  - alias: Dim dressing and wardrobe lights 5 minutes after last movement when evening mode is on
+    trigger:
+      platform: state
+      entity_id: binary_sensor.dressing_motion
+      to: 'off'
+      for:
+        minutes: 5
+    condition:
+      - condition: state
+        entity_id: input_boolean.evening_mode
+        state: 'on'
+    action:
+      - service: light.turn_on
+        entity_id: light.dressing
+      - service: light.turn_off
+        entity_id: light.wardrobe
+
+  - alias: Turn off dressing and wardrobe lights 5 minutes after last movement during day or night
+    trigger:
+      platform: state
+      entity_id: binary_sensor.dressing_motion
+      to: 'off'
+      for:
+        minutes: 5
+    condition:
+      condition: or
+      conditions:
+        - condition: state
+          entity_id: input_boolean.evening_mode
+          state: 'off'
+        - condition: time
+          after: '01:00:00'
+          before: '07:00:00'
+    action:
+      - service: light.turn_off
+        entity_id: light.dressing
+      - service: light.turn_off
+        entity_id: light.wardrobe

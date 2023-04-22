@@ -1,0 +1,98 @@
+## Cinema Automations
+
+  - alias: Cinema on through remote
+    id: 'cinema_on_remote'
+    trigger:
+      - platform: state
+        entity_id: media_player.home_cinema
+        from: 'off'
+    action:
+      - service: script.cinema_tv_remote
+
+  - alias: Cinema off through remote
+    id: 'cinema_off_remote'
+    trigger:
+      - platform: state
+        entity_id: media_player.home_cinema
+        to: 'off'
+    action:
+      - service: script.cinema_off
+
+  - alias: Cinema lights dim normal mode
+    id: 'cinema_lights_dim_normal'
+    trigger:
+      - platform: state
+        entity_id: media_player.home_cinema
+        to: 'playing'
+
+    condition:
+      - condition: state
+        entity_id: input_select.cinema_mode
+        state: 'Normal'
+
+    action:
+      - service: scene.turn_on
+        entity_id: scene.cinema_dim_normal
+
+  - alias: Cinema lights dim movie mode
+    id: 'cinema_lights_dim_movie'
+    trigger:
+      - platform: state
+        entity_id: media_player.home_cinema
+        to: 'playing'
+
+    condition:
+      - condition: state
+        entity_id: input_select.cinema_mode
+        state: 'Movie'
+
+    action:
+      - service: scene.turn_on
+        entity_id: scene.cinema_dim_movie
+
+  - alias: Cinema lights dim sport mode
+    id: 'cinema_lights_dim_sport'
+    trigger:
+      - platform: state
+        entity_id: media_player.home_cinema
+        to: 'playing'
+
+    condition:
+      - condition: state
+        entity_id: input_select.cinema_mode
+        state: 'Sport'
+
+    action:
+      - service: scene.turn_on
+        entity_id: scene.cinema_dim_sport
+
+  - alias: Cinema lights on
+    id: 'cinema_lights_on'
+    trigger:
+      - platform: state
+        entity_id: media_player.home_cinema
+        to: 'idle'
+      - platform: state
+        entity_id: media_player.home_cinema
+        to: 'paused'
+      - platform: state
+        entity_id: media_player.home_cinema
+        to: 'off'
+
+    condition:
+      - condition: template
+        value_template: "{{ not (is_state('input_select.cinema_mode', 'Off')) }}"
+
+    action:
+      - service: scene.turn_on
+        entity_id: scene.cinema_on
+
+  - alias: 'Cinema subwoofer level'
+    trigger:
+      platform: state
+      entity_id: input_number.cinema_subwoofer_level
+    action:
+    - service: denonavr.get_command
+      data_template:
+        entity_id: media_player.cinema_receiver
+        command: /goform/formiPhoneAppDirect.xml?CVSW%20{{ ( states("input_number.cinema_subwoofer_level") | float *10 + 500 ) | int }}

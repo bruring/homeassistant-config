@@ -1,0 +1,398 @@
+##############################################################
+# Home Assistant Core
+# Joris Bruring joris@ruring.net
+# Inspiration from https://github.com/geekofweek/homeassistant
+##############################################################
+
+homeassistant:
+  name: VLS
+  latitude: !secret latitude
+  longitude: !secret longitude
+  elevation: !secret elevation
+  unit_system: metric
+  time_zone: !secret time_zone
+  external_url: !secret external_url
+  internal_url: !secret internal_url
+  country: !secret country
+
+http:
+  server_port: 443
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.20.1.1
+  ip_ban_enabled: true
+  login_attempts_threshold: 10
+  ssl_certificate: "/ssl/fullchain.pem"
+  ssl_key: "/ssl/privkey.pem"
+
+cloud:
+config:
+conversation:
+discovery:
+frontend:
+  themes: !include_dir_merge_named themes
+history:
+logbook:
+map:
+mobile_app:
+person:
+sun:
+system_health:
+zeroconf:
+python_script:
+media_extractor:
+energy:
+default_config:
+
+##############################################
+# Components
+##############################################
+
+netatmo:
+  client_id: !secret netatmo_client_id
+  client_secret: !secret netatmo_client_secret
+
+tts:
+  - platform: google_translate
+
+recorder:
+  db_url: !secret recorder_db_url
+  purge_keep_days: 178
+
+influxdb:
+  host: 172.20.1.7
+  port: 8086
+  database: homeassistant
+  username: !secret influxdb_username
+  password: !secret influxdb_password
+  max_retries: 3
+  default_measurement: state
+
+hacs:
+  token: !secret hacs_token
+
+spotcast:
+  sp_dc: !secret spotcast_sp_dc
+  sp_key: !secret spotcast_sp_key
+
+utility_meter:
+  vls2_hourly_power_offpeak:
+    source: sensor.vls2_energy_consumed_tariff_1
+    cycle: hourly
+  vls2_hourly_power_peak:
+    source: sensor.vls2_energy_consumed_tariff_2
+    cycle: hourly
+  vls2_hourly_gas:
+    source: sensor.vls2_gas_consumed
+    cycle: hourly
+  vls2_daily_power_offpeak:
+    source: sensor.vls2_energy_consumed_tariff_1
+    cycle: daily
+  vls2_daily_power_peak:
+    source: sensor.vls2_energy_consumed_tariff_2
+    cycle: daily
+  vls2_daily_gas:
+    source: sensor.vls2_gas_consumed
+    cycle: daily
+  vls2_monthly_power_offpeak:
+    source: sensor.vls2_energy_consumed_tariff_1
+    cycle: monthly
+  vls2_monthly_power_peak:
+    source: sensor.vls2_energy_consumed_tariff_2
+    cycle: monthly
+  vls2_monthly_gas:
+    source: sensor.vls2_gas_consumed
+    cycle: monthly
+
+  vls12_hourly_power_offpeak:
+    source: sensor.vls12_energy_consumed_tariff_1
+    cycle: hourly
+  vls12_hourly_power_peak:
+    source: sensor.vls12_energy_consumed_tariff_2
+    cycle: hourly
+  vls12_hourly_gas:
+    source: sensor.vls12_gas_consumed
+    cycle: hourly
+  vls12_daily_power_offpeak:
+    source: sensor.vls12_energy_consumed_tariff_1
+    cycle: daily
+  vls12_daily_power_peak:
+    source: sensor.vls12_energy_consumed_tariff_2
+    cycle: daily
+  vls12_daily_gas:
+    source: sensor.vls12_gas_consumed
+    cycle: daily
+  vls12_monthly_power_offpeak:
+    source: sensor.vls12_energy_consumed_tariff_1
+    cycle: monthly
+  vls12_monthly_power_peak:
+    source: sensor.vls12_energy_consumed_tariff_2
+    cycle: monthly
+  vls12_monthly_gas:
+    source: sensor.vls12_gas_consumed
+    cycle: monthly
+
+  vls30_hourly_power_offpeak:
+    source: sensor.vls30_energy_consumed_tariff_1
+    cycle: hourly
+  vls30_hourly_power_peak:
+    source: sensor.vls30_energy_consumed_tariff_2
+    cycle: hourly
+  vls30_hourly_gas:
+    source: sensor.vls30_gas_consumed
+    cycle: hourly
+  vls30_daily_power_offpeak:
+    source: sensor.vls30_energy_consumed_tariff_1
+    cycle: daily
+  vls30_daily_power_peak:
+    source: sensor.vls30_energy_consumed_tariff_2
+    cycle: daily
+  vls30_daily_gas:
+    source: sensor.vls30_gas_consumed
+    cycle: daily
+  vls30_monthly_power_offpeak:
+    source: sensor.vls30_energy_consumed_tariff_1
+    cycle: monthly
+  vls30_monthly_power_peak:
+    source: sensor.vls30_energy_consumed_tariff_2
+    cycle: monthly
+  vls30_monthly_gas:
+    source: sensor.vls30_gas_consumed
+    cycle: monthly
+
+binary_sensor:
+  - platform: ping
+    host: !secret tado_host
+    name: Tado
+    scan_interval: 60
+  - platform: ping
+    host: !secret tv_host
+    scan_interval: 5
+    count: 2
+    name: Living TV
+  - platform: workday
+    name: Next Day Workday Sensor
+    country: NL
+    workdays: [mon,tue,wed,thu,fri]
+    days_offset: 1
+  - platform: workday
+    country: NL
+    workdays: [mon,tue,wed,thu,fri]
+
+stream:
+
+notify:
+  - name: household
+    platform: group
+    services:
+      - service: joris
+      - service: murielle
+
+rest_command:
+
+  assistant_broadcast:
+    url: http://localhost:3000/assistant
+    method: POST
+    content_type: 'application/json; charset=utf-8'
+    payload: '{"command":"{{ command }}", "broadcast":true}'
+
+  assistant_relay:
+    url: http://localhost:3000/assistant
+    method: POST
+    content_type: 'application/json; charset=utf-8'
+    payload: '{"command":"{{ command }}"}'
+
+bring_shopping_list:
+  lists:
+    - id: 0b935387-97f5-4d88-a925-dba7fdb95c24
+      name: Home
+      locale: nl-NL
+
+# Sidebar
+panel_iframe:
+  grafana:
+    title: 'Grafana'
+    url: !secret grafana_url
+    icon: mdi:chart-line
+    require_admin: true
+  chronograf:
+    title: 'Chronograf'
+    url: !secret chronograf_url
+    icon: mdi:watch
+    require_admin: true
+
+# Home status (Vera thing) input select
+input_select:
+  house_mode:
+    name: House mode
+    options:
+      - "home"
+      - "away"
+    icon: mdi:home
+
+# Cinema Mode
+  cinema_mode:
+    name: Cinema mode
+    options:
+      - "Off"
+      - "Normal"
+      - "Movie"
+      - "Sport"
+    icon: mdi:theater
+
+# Input Text definitions
+input_text:
+  uber_status:
+    name: Uber Status
+
+# Input booleans
+input_boolean:
+  dark_outside:
+    name: Dark outside
+    icon: mdi:weather-sunset
+
+  dark_inside:
+    name: Dark inside
+    icon: mdi:theme-light-dark
+
+  evening_mode:
+    name: Evening mode
+    icon: mdi:weather-night
+
+  bedjes:
+    name: Bedjes samen
+    icon: mdi:bed-empty
+
+  alarm:
+    name: Alarm status
+    icon: mdi:alert
+
+# Input number
+input_number:
+  cinema_subwoofer_level:
+    name: Cinema subwoofer level
+    initial: 0
+    max: 12
+    min: -12
+    step: 0.5
+
+# Microsoft Office 365 Integration
+o365:
+  accounts:
+    - account_name: The OS
+      client_id: !secret o365_id
+      client_secret: !secret o365_secret
+      alt_auth_method: False
+      enable_update: True
+
+# Other calendar
+calendar:
+- platform: ics_calendar
+  calendars:
+      - name: !secret o365_calendar2_name
+        include_all_day: True
+        url: !secret o365_calendar2_url
+
+# Google Assistant integration
+google_assistant:
+  project_id: !secret google_assistant_id
+  service_account: !include google_account.json
+  exposed_domains:
+    - camera
+    - scene
+    - script
+    - light
+    - fan
+  entity_config:
+    light.office_lights:
+      expose: false
+    light.cinema_lights:
+      expose: false
+    light.kitchen_lights:
+      expose: false
+    light.garden_lights:
+      expose: false
+    light.living_lights:
+      expose: false
+    light.wardrobe_lights:
+      expose: false
+    light.basement_fans:
+      expose: false
+    light.system:
+      expose: false
+    switch.tado_switch:
+      expose: false
+    input_boolean.bedjes:
+      expose: true
+      aliases:
+        - bed
+        - bedje
+
+# Dark Sky
+weather:
+  - platform: darksky
+    api_key: !secret darksky_key
+
+# Enable proximity sensor
+proximity:
+  home:
+    devices:
+      - device_tracker.joris
+      - device_tracker.murielle
+    tolerance: 50
+    unit_of_measurement: km
+
+# Switches
+switch:
+  platform: telnet
+  switches:
+    cinema_projector:
+      name: Cinema Projector
+      resource: !secret optoma
+      port: 23
+      command_on: "~0000 1\r"
+      command_off: "~0000 0\r"
+      #command_state: "~00150 1\r"
+      value_template: '{{ "Ok1" in value }}'
+      timeout: 0.9
+    cinema_projector_source:
+      name: Cinema Projector Source
+      resource: !secret optoma
+      port: 23
+      command_on: "~0012 1\r"
+      command_off: "~0012 15\r"
+      value_template: '{{ "Ok1" in value }}'
+      timeout: 0.9
+
+thermal_comfort:
+    sensor:
+    - name: Basement
+      temperature_sensor: sensor.basement_temperature
+      humidity_sensor: sensor.basement_humidity
+      unique_id: adfc2df6-5cd8-4211-8bf7-a496ea97d72f
+    - name: Living
+      temperature_sensor: sensor.netatmo_indoor_temperature
+      humidity_sensor: sensor.netatmo_indoor_humidity
+      unique_id: 2cad3ded-2a74-4ec9-9ebf-e1ccb985c895
+    - name: Master Bedroom
+      temperature_sensor: sensor.mbedroom_temperature
+      humidity_sensor: sensor.mbedroom_humidity
+      unique_id: f5b25431-20cb-4cf0-af6b-0e6da5e291ce
+    - name: Office
+      temperature_sensor: sensor.office_temperature
+      humidity_sensor: sensor.office_humidity
+      unique_id: 426bd527-1866-43a7-99a5-9aa1e153d0ac
+    - name: Cinema
+      temperature_sensor: sensor.cinema_temperature
+      humidity_sensor: sensor.cinema_humidity
+      unique_id: c74fc687-7e58-4a8f-b3cc-a3772a58986d
+
+## Includes
+automation: !include_dir_merge_list automation
+automation ui: !include automations.yaml
+group: !include groups.yaml
+script: !include scripts.yaml
+sensor: !include sensors.yaml
+zone: !include zones.yaml
+light: !include light_group.yaml
+scene: !include scenes.yaml

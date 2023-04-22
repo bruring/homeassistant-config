@@ -1,0 +1,203 @@
+#################################################################
+## Some switches, when turned on, need a timeout
+#################################################################
+
+# Turn on and off HiFi when music is playing
+#  - alias: "Turn on HiFi when music is playing"
+#    trigger:
+#      - platform: state
+#        entity_id: media_player.hifi
+#        to: 'playing'
+#    action:
+#      service: remote.send_command
+#      data:
+#        command: PowerOn
+#        device: 56800283
+#        entity_id: remote.living
+
+#  - alias: "Turn off HiFi in 5 min after music is stopped"
+#    trigger:
+#      - platform: state
+#        entity_id: media_player.hifi
+#        to: 'off'
+#        for:
+#          minutes: 5
+#      - platform: state
+#        entity_id: media_player.hifi
+#        to: 'paused'
+#        for:
+#          minutes: 5
+#    action:
+#      service: remote.send_command
+#      data:
+#        command: PowerOff
+#        device: 56800283
+#        entity_id: remote.living
+
+# Bed heating Joris & Murielle off (2 hours timeout)
+  - alias: Turn off bed heating Muk after 2 hours
+    trigger:
+      platform: state
+      entity_id: switch.bedje_muk
+      from: 'off'
+      to: 'on'
+      for:
+        hours: 2
+    action:
+      service: switch.turn_off
+      entity_id: switch.bedje_muk
+
+  - alias: Turn off bed heating Joris after 2 hours
+    trigger:
+      platform: state
+      entity_id: switch.bedje_joris
+      from: 'off'
+      to: 'on'
+      for:
+        hours: 2
+    action:
+      service: switch.turn_off
+      entity_id: switch.bedje_joris
+
+# If both Bedjes are turned off, turn input boolean off
+  - alias: Turn off bedjes boolean when both bedjes are off
+    trigger:
+      - platform: state
+        entity_id: 'switch.bedje_joris'
+        from: 'on'
+        to: 'off'
+      - platform: state
+        entity_id: 'switch.bedje_muk'
+        from: 'on'
+        to: 'off'
+    condition:
+      - condition: state
+        entity_id: 'switch.bedje_joris'
+        state: 'off'
+      - condition: state
+        entity_id: 'switch.bedje_muk'
+        state: 'off'
+    action:
+      service: input_boolean.turn_off
+      entity_id: input_boolean.bedjes
+
+# If both Bedjes are turned on, turn input boolean on
+  - alias: Turn on bedjes boolean when both bedjes are on
+    trigger:
+      - platform: state
+        entity_id: 'switch.bedje_joris'
+        from: 'off'
+        to: 'on'
+      - platform: state
+        entity_id: 'switch.bedje_muk'
+        from: 'off'
+        to: 'on'
+    condition:
+      - condition: state
+        entity_id: 'switch.bedje_joris'
+        state: 'on'
+      - condition: state
+        entity_id: 'switch.bedje_muk'
+        state: 'on'
+    action:
+      service: input_boolean.turn_on
+      entity_id: input_boolean.bedjes
+
+# Bed heating control
+  - alias: Turn on bedjes when both bedjes are turned on (meta boolean)
+    trigger:
+      platform: state
+      entity_id: 'input_boolean.bedjes'
+      from: 'off'
+      to: 'on'
+    action:
+      - service: switch.turn_on
+        entity_id: switch.bedje_joris
+      - service: switch.turn_on
+        entity_id: switch.bedje_muk
+
+  - alias: Turn off bedjes when both bedjes are turned off (meta boolean)
+    trigger:
+      platform: state
+      entity_id: 'input_boolean.bedjes'
+      from: 'on'
+      to: 'off'
+    action:
+      - service: switch.turn_off
+        entity_id: switch.bedje_joris
+      - service: switch.turn_off
+        entity_id: switch.bedje_muk
+
+  - alias: Turn on bed at 22.00 if next day is workday
+    trigger:
+      platform: time
+      at: '22:00:00'
+    condition:
+    - condition: state
+      entity_id: input_select.house_mode
+      state: 'home'
+    - condition: state
+      entity_id: 'binary_sensor.next_day_workday_sensor'
+      state: 'on'
+    - condition: numeric_state
+      entity_id: 'sensor.mbedroom_temperature'
+      below: 20
+    action:
+      service: input_boolean.turn_on
+      entity_id: input_boolean.bedjes
+
+  - alias: Turn on bed at 23.30 if next day is free day
+    trigger:
+      platform: time
+      at: '23:30:00'
+    condition:
+    - condition: state
+      entity_id: input_select.house_mode
+      state: 'home'
+    - condition: state
+      entity_id: 'binary_sensor.next_day_workday_sensor'
+      state: 'off'
+    - condition: numeric_state
+      entity_id: 'sensor.mbedroom_temperature'
+      below: 20
+    action:
+      service: input_boolean.turn_on
+      entity_id: input_boolean.bedjes
+
+  - alias: Turn on bedjes when going home
+    trigger:
+      platform: numeric_state
+      entity_id: proximity.home
+      below: 1
+    condition:
+      condition: and
+      conditions:
+      - condition: time
+        after: '22:00:00'
+        before: '06:00:00'
+      - condition: state
+        entity_id: input_select.house_mode
+        state: 'away'
+      - condition: template
+        value_template: '{{ states.proximity.home.attributes.dir_of_travel == "towards" }}'
+      - condition: numeric_state
+        entity_id: 'sensor.mbedroom_temperature'
+        below: 20
+    action:
+      service: input_boolean.turn_on
+      entity_id: input_boolean.bedjes
+
+  - alias: Turn off Garden lights at 23.00 if next day is workday
+    trigger:
+      platform: time
+      at: '23:00:00'
+    condition:
+    - condition: state
+      entity_id: input_select.house_mode
+      state: 'home'
+    - condition: state
+      entity_id: 'binary_sensor.next_day_workday_sensor'
+      state: 'on'
+    action:
+      service: light.turn_off
+      entity_id: light.garden_lights

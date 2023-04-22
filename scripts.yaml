@@ -1,0 +1,244 @@
+play_music:
+  alias: Play Spotify on home group
+  sequence:
+  - service: spotcast.start
+    data:
+      device_name: "Home Group"
+      uri: "spotify:playlist:4bVzyVDxDQwNncf1YQii2o"
+
+play_music_discover:
+  alias: Play Spotify on home group, Discover Weekly playlist
+  sequence:
+  - service: spotcast.start
+    data:
+      device_name: "Home Group"
+      uri: "spotify:playlist:37i9dQZEVXcXBor995EVsM"
+
+play_music_topnl:
+  alias: Play Spotify on home group, Top Hits NL playlist
+  sequence:
+  - service: spotcast.start
+    data:
+      device_name: "Home Group"
+      uri: "spotify:playlist:37i9dQZF1DWSBi5svWQ9Nk"
+
+play_music_muk:
+  alias: Play Spotify on home group, Murielle Starred playlist
+  sequence:
+  - service: spotcast.start
+    data:
+      device_name: "Home Group"
+      uri: "spotify:playlist:6GKm1sOB2UZNIjPOu8k16f"
+
+stop_music:
+  alias: Stop music on home group
+  sequence:
+  - service: media_player.media_pause
+    entity_id: media_player.spotify_joris_bruring
+  - service: media_player.turn_off
+    entity_id: media_player.home_group
+  - service: media_player.turn_off
+    entity_id: media_player.living_hifi
+
+add_to_playlist:
+  alias: Add Spotify Track to Favorites Playlist
+  sequence:
+  - service: rest_command.spotify_add_to_favorites
+#  - service: notify.joris
+#    data:
+#      message: '{"uris":["{{ state_attr("media_player.spotify_joris_bruring", "media_content_id") }}"]}'
+
+all_lights_on:
+  alias: Turn all lights on
+  sequence:
+  - service: scene.turn_on
+    entity_id: scene.lights_vls2_on
+  - service: scene.turn_on
+    entity_id: scene.lights_vls12_on
+
+all_lights_off:
+  alias: Turn all lights off
+  sequence:
+  - service: scene.turn_on
+    entity_id: scene.lights_vls2_off
+  - service: scene.turn_on
+    entity_id: scene.lights_vls12_off
+
+all_lights_away:
+  alias: Set all lights to away mode
+  sequence:
+    - service: light.turn_on
+      entity_id: light.office_main
+      data:
+        brightness: 36
+    - service: light.turn_off
+      entity_id: light.office_wall
+    - service: light.turn_on
+      entity_id: light.desk
+    - service: light.turn_on
+      entity_id: light.living_main
+      data:
+        brightness: 80
+    - service: light.turn_on
+      entity_id: light.bar
+      data:
+        brightness: 26
+    - service: light.turn_on
+      entity_id: light.couch_light
+      data:
+        brightness: 6
+    - service: light.turn_on
+      entity_id: light.living_tv_right
+      data:
+        brightness: 56
+    - service: light.turn_on
+      entity_id: light.living_tv_left
+      data:
+        brightness: 136
+    - service: light.turn_off
+      entity_id: light.kitchen_sink
+    - service: light.turn_off
+      entity_id: light.cinema
+    - service: light.turn_on
+      entity_id: light.cinema_side
+      data:
+        brightness: 110
+    - service: light.turn_off
+      entity_id: light.hallway
+    - service: light.turn_off
+      entity_id: light.dressing
+    - service: light.turn_off
+      entity_id: light.wardrobe
+    - service: light.turn_off
+      entity_id: light.guest_bedroom
+    - service: light.turn_off
+      entity_id: light.master_bedroom
+    - service: light.turn_off
+      entity_id: light.garden_lights
+    - service: light.turn_off
+      entity_id: light.lucellino
+    - service: light.turn_off
+      entity_id: light.living_canvas
+
+all_devices_off:
+  alias: Turn all devices off
+  sequence:
+    - service: switch.turn_off
+      entity_id: switch.bedje_joris
+    - service: switch.turn_off
+      entity_id: switch.bedje_muk
+    - service: light.turn_off
+      entity_id: light.living_canvas
+
+cinema_projector_hdmi1:
+  alias: Set Cinema Projector to HDMI1
+  sequence:
+    - service: switch.turn_on
+      entity_id: switch.cinema_projector_source
+
+cinema_projector_hdmi2:
+  alias: Set Cinema Projector to HDMI2
+  sequence:
+    - service: switch.turn_off
+      entity_id: switch.cinema_projector_source
+
+cinema_tv_remote:
+  alias: Activate Cinema TV mode from remote
+  sequence:
+    - service: switch.turn_on
+      entity_id: switch.cinema_projector
+    - service: media_player.turn_on
+      entity_id: media_player.cinema_receiver
+    - delay: '00:00:15'
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.cinema_receiver
+        source: 8K
+    - service: script.cinema_projector_hdmi2
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.cinema_mode
+      data:
+        option: 'TV'
+
+cinema_tv:
+  alias: Activate Cinema TV mode
+  sequence:
+    - service: switch.turn_on
+      entity_id: switch.cinema_projector
+    - service: media_player.turn_on
+      entity_id: media_player.home_cinema
+    - service: media_player.turn_on
+      entity_id: media_player.cinema_receiver
+    - delay: '00:00:15'
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.cinema_receiver
+        source: 8K
+    - service: script.cinema_projector_hdmi2
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.cinema_mode
+      data:
+        option: 'TV'
+
+cinema_movie:
+  alias: Activate Cinema Movie mode
+  sequence:
+    - service: switch.turn_on
+      entity_id: switch.cinema_projector
+    - service: media_player.turn_on
+      entity_id: media_player.home_cinema
+    - service: media_player.turn_on
+      entity_id: media_player.cinema_receiver
+    - delay: '00:00:15'
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.cinema_receiver
+        source: 8K
+    - service: script.cinema_projector_hdmi2
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.cinema_mode
+      data:
+        option: 'Movie'
+
+cinema_sport:
+  alias: Activate Cinema Sport mode
+  sequence:
+    - service: switch.turn_on
+      entity_id: switch.cinema_projector
+    - service: media_player.turn_on
+      entity_id: media_player.cinema_receiver
+    - delay: '00:00:15'
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.cinema_receiver
+        source: Media Player
+    - service: script.cinema_projector_hdmi1
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.cinema_mode
+      data:
+        option: 'Sport'
+
+cinema_off:
+  alias: Turn off Cinema
+  sequence:
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.cinema_receiver
+        source: 8K
+    - service: script.cinema_projector_hdmi2
+    - delay: '00:00:02'
+    - service: switch.turn_off
+      entity_id: switch.cinema_projector
+    - service: media_player.turn_off
+      entity_id: media_player.home_cinema
+    - service: media_player.turn_off
+      entity_id: media_player.cinema_receiver
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.cinema_mode
+      data:
+        option: 'Normal'

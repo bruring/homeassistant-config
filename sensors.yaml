@@ -1,0 +1,260 @@
+##############################################
+## Sensors
+##############################################
+
+  # Sure Petcare
+  - platform: template
+    sensors:
+      sammie_status_t:
+        friendly_name: "Sammie Status"
+        value_template: "{{ state_attr('binary_sensor.pet_sammie', 'where') }}"
+      sammie_last_state_t:
+        friendly_name: "Sammie's Last Status"
+        value_template: "{{ state_attr('binary_sensor.pet_sammie', 'where') }} since {{as_timestamp(state_attr('binary_sensor.pet_sammie', 'since')) | timestamp_custom('%H:%M')}}"  
+
+  - platform: template
+    sensors:
+      bailey_status_t:
+        friendly_name: "Bailey Status"
+        value_template: "{{ state_attr('binary_sensor.pet_bailey', 'where') }}"
+      bailey_last_state_t:
+        friendly_name: "Bailey's Last Status"
+        value_template: "{{ state_attr('binary_sensor.pet_bailey', 'where') }} since {{as_timestamp(state_attr('binary_sensor.pet_bailey', 'since')) | timestamp_custom('%H:%M')}}"  
+
+  # Basement absolute humidity vs office absolute humidity sensor
+  - platform: template
+    sensors:
+      basement_minus_office_humidity:
+        friendly_name: 'Basement minus Office humidity'
+        value_template: '{{ (states.sensor.basement_absolutehumidity.state | float - states.sensor.office_absolutehumidity.state | float)  }}'
+        unit_of_measurement: 'g/m³'
+
+  # 17 track
+  - platform: seventeentrack
+    username: !secret 17track_username
+    password: !secret 17track_password
+
+  # Zwift
+  - platform: zwift
+    username: !secret zwift_username
+    password: !secret zwift_password
+
+  # Darksky
+  - platform: darksky
+    api_key: !secret darksky_key
+    forecast:
+      - 0
+    hourly_forecast:
+      - 0
+      - 1
+    monitored_conditions:
+      - precip_intensity
+      - precip_probability
+      - temperature
+      - apparent_temperature
+      - wind_speed
+      - moon_phase
+      - cloud_cover
+
+  # Is it dark outside?
+  - platform: template
+    sensors:
+      sunlight_pct:
+        friendly_name: 'Sunlight percentage'
+        value_template: >-
+          {%- set elevation = state_attr('sun.sun','elevation') | float %}
+          {%- set cloud_coverage = states('sensor.dark_sky_cloud_coverage') | float %}
+          {%- set cloud_factor = (1 - (0.75 * ( cloud_coverage / 100) ** 3 )) %}
+          {%- set min_elevation = -6 %}
+          {%- set max_elevation = 60 %}
+          {%- set adjusted_elevation = elevation - min_elevation %}
+          {%- set adjusted_elevation = [adjusted_elevation,0] | max %}
+          {%- set adjusted_elevation = [adjusted_elevation,max_elevation - min_elevation] | min %}
+          {%- set adjusted_elevation = adjusted_elevation / (max_elevation - min_elevation) %}
+          {%- set adjusted_elevation = adjusted_elevation %}
+          {%- set adjusted_elevation = adjusted_elevation * 100 %}
+          {%- set brightness = adjusted_elevation * cloud_factor %}
+          {{ brightness | round }}
+        unit_of_measurement: '%'
+        device_class: 'illuminance'
+
+  # Motion sensors
+  - platform: template
+    sensors:
+      motion:
+        value_template: >-
+          {% if states('group.motion_sensors') == 'on' %}
+            {%- for item in states.group.motion_sensors.attributes.entity_id if (states(item) == 'on') %}
+              {% if loop.last %}
+                {{ loop.index }}
+              {% endif %}
+            {% endfor %}
+          {% else %}
+            0
+          {% endif %}
+        unit_of_measurement: 'on'
+
+  - platform: history_stats
+    name: Motion History
+    entity_id: sensor.motion
+    state: 'on'
+    type: count
+    duration:
+      minutes: 2
+    end: "{{ now() }}"
+    scan_interval: 5
+
+#  - platform: statistics
+#    name: Motion count
+#    entity_id: sensor.motion
+#    max_age:
+#      seconds: 45
+
+  # Some nice statistics
+
+  - platform: history_stats
+    name: Garden door usage
+    entity_id: binary_sensor.garden_door
+    state: 'on'
+    type: count
+    start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+    end: '{{ now() }}'
+
+  - platform: history_stats
+    name: Television hours
+    entity_id: switch.living_tvaudio
+    state: 'on'
+    type: time
+    start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+    end: '{{ now() }}'
+
+  - platform: template
+    sensors:
+      office_luminance_lx:
+        friendly_name: "Office Luminance (lx)"
+        value_template: "{{ states('sensor.office_luminance') }}"
+        unit_of_measurement: 'lx'
+
+  - platform: template
+    sensors:
+      living_luminance_lx:
+        friendly_name: "Living Luminance (lx)"
+        value_template: "{{ states('sensor.living_luminance') }}"
+        unit_of_measurement: 'lx'
+
+  - platform: template
+    sensors:
+      dressing_luminance_lx:
+        friendly_name: "Dressing Luminance (lx)"
+        value_template: "{{ states('sensor.dressing_luminance') }}"
+        unit_of_measurement: 'lx'
+
+  - platform: template
+    sensors:
+      cinema_luminance_lx:
+        friendly_name: "Cinema Luminance (lx)"
+        value_template: "{{ states('sensor.cinema_luminance') }}"
+        unit_of_measurement: 'lx'
+
+  - platform: min_max
+    name: Average Light Level
+    type: mean
+    entity_ids:
+      - sensor.office_luminance_lx
+      - sensor.living_luminance_lx
+      - sensor.dressing_luminance_lx
+      - sensor.cinema_luminance_lx
+
+  - platform: average
+    name: 'Average Light Level new'
+    duration:
+      minutes: 5
+    entities:
+      - sensor.office_luminance_lx
+      - sensor.living_luminance_lx
+      - sensor.dressing_luminance_lx
+      - sensor.cinema_luminance_lx
+
+## Sure petcare sensors
+  - platform: template
+    sensors:
+      sammie_status:
+        friendly_name: "Sammie Status"
+        value_template: "{{ state_attr('binary_sensor.pet_sammie', 'where') }}"
+        icon_template : >
+          {% if states.binary_sensor.pet_sammie.state == "on" %}
+            mdi:home
+          {% else %}
+            mdi:nature
+          {% endif %}
+      bailey_status:
+        friendly_name: "Bailey Status"
+        value_template: "{{ state_attr('binary_sensor.pet_bailey', 'where') }}"
+        icon_template : >
+          {% if states.binary_sensor.pet_bailey.state == "on" %}
+            mdi:home
+          {% else %}
+            mdi:nature
+          {% endif %}
+
+  - platform: history_stats
+    name: Sammie outside time
+    entity_id: sensor.sammie_status
+    state: 'Outside'
+    type: time
+    start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+    end: '{{ now() }}'
+  - platform: history_stats
+    name: Sammie trips outside
+    entity_id: sensor.sammie_status
+    state: 'Outside'
+    type: count
+    start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+    end: '{{ now() }}'
+  - platform: history_stats
+    name: Sammie outside (yesterday)
+    entity_id: sensor.sammie_status
+    state: 'Outside'
+    type: time
+    end : '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+    duration:
+      hours: 24
+  - platform: history_stats
+    name: Sammie trips outside (yesterday)
+    entity_id: sensor.sammie_status
+    state: 'Outside'
+    type: count
+    end : '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+    duration:
+      hours: 24
+
+  - platform: history_stats
+    name: Bailey outside time
+    entity_id: sensor.bailey_status
+    state: 'Outside'
+    type: time
+    start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+    end: '{{ now() }}'
+  - platform: history_stats
+    name: Bailey trips outside
+    entity_id: sensor.bailey_status
+    state: 'Outside'
+    type: count
+    start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+    end: '{{ now() }}'
+  - platform: history_stats
+    name: Bailey outside (yesterday)
+    entity_id: sensor.bailey_status
+    state: 'Outside'
+    type: time
+    end : '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+    duration:
+      hours: 24
+  - platform: history_stats
+    name: Bailey trips outside (yesterday)
+    entity_id: sensor.bailey_status
+    state: 'Outside'
+    type: count
+    end : '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+    duration:
+      hours: 24

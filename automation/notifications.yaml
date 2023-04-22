@@ -1,0 +1,20 @@
+#################################################################
+## Notifications
+#################################################################
+
+# Notify when bedjes are on
+  - alias: 'Notify when Bedjes are on'
+    trigger:
+      platform: state
+      entity_id: input_boolean.bedjes
+      from: 'off'
+      to: 'on'
+    action:
+      - service: notify.joris
+        data:
+          title: 'Bedje'
+          message: "Turned bedjes on"
+      - service: notify.murielle
+        data:
+          title: 'Bedje'
+          message: "Turned bedjes on"

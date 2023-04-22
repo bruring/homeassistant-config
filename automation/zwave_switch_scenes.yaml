@@ -1,0 +1,48 @@
+#################################################################
+## Scenes for Z-Wave switches
+#################################################################
+
+  - alias: Turn on VLS2 lights
+    trigger:
+      platform: event
+      event_type: zwave.scene_activated
+      event_data:
+        entity_id: zwave.kitchen_switch
+        scene_id: 11
+    action:
+    - service: scene.turn_on
+      entity_id: scene.lights_vls2_on
+
+  - alias: Turn off VLS2 lights
+    trigger:
+      platform: event
+      event_type: zwave.scene_activated
+      event_data:
+        entity_id: zwave.kitchen_switch
+        scene_id: 31
+    action:
+    - service: scene.turn_on
+      entity_id: scene.lights_vls2_off
+    - service: script.stop_music
+
+  - alias: Turn on VLS12 house lights
+    trigger:
+      platform: event
+      event_type: zwave.scene_activated
+      event_data:
+        entity_id: zwave.kitchen_switch
+        scene_id: 21
+    action:
+    - service: scene.turn_on
+      entity_id: scene.lights_vls12_on
+
+  - alias: Turn off VLS12 house lights
+    trigger:
+      platform: event
+      event_type: zwave.scene_activated
+      event_data:
+        entity_id: zwave.kitchen_switch
+        scene_id: 41
+    action:
+    - service: scene.turn_on
+      entity_id: scene.lights_vls12_off

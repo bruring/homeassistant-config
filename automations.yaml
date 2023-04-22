@@ -1,0 +1,158 @@
+- id: '1672325887162'
+  alias: House mode - away
+  description: When the alarm is armed, set house mode to away
+  trigger:
+  - platform: device
+    device_id: dc23fe84786884df4f478982a78200d0
+    domain: alarm_control_panel
+    entity_id: alarm_control_panel.vls2_alarm
+    type: armed_away
+  condition: []
+  action:
+  - service: input_select.select_option
+    data:
+      option: away
+    target:
+      entity_id: input_select.house_mode
+  mode: single
+- id: '1672325942646'
+  alias: House mode - home
+  description: When alarm is disarmed, set house mode to home
+  trigger:
+  - platform: device
+    device_id: dc23fe84786884df4f478982a78200d0
+    domain: alarm_control_panel
+    entity_id: alarm_control_panel.vls2_alarm
+    type: disarmed
+  condition: []
+  action:
+  - service: input_select.select_option
+    data:
+      option: home
+    target:
+      entity_id: input_select.house_mode
+  mode: single
+- id: '1672394219574'
+  alias: VLS30 Turn On Heating when disarming alarm (delayed)
+  description: ''
+  trigger:
+  - platform: event
+    event_type: timer.finished
+    event_data:
+      entity_id: timer.vls30_entry_timer
+  action:
+  - service: climate.set_temperature
+    data:
+      temperature: 19
+    target:
+      entity_id: climate.vls30
+- id: '1673705079231'
+  alias: VLS30 Disarmed
+  description: Actions when disarming alarm on VLS30
+  trigger:
+  - platform: device
+    domain: alarm_control_panel
+    device_id: 00130f523184368505240b19dd0a6cec
+    entity_id: alarm_control_panel.vls30_alarm
+    type: disarmed
+  condition: []
+  action:
+  - service: light.turn_on
+    data: {}
+    target:
+      area_id: vls30
+  - service: timer.start
+    data:
+      duration: 00:05:00
+    target:
+      entity_id: timer.vls30_entry_timer
+  - type: turn_on
+    device_id: 74fa641bf8dd65d97a7b5cb6f592c743
+    entity_id: switch.vls30_guy
+    domain: switch
+  - type: turn_on
+    device_id: f35fc3c55e516b725437dc8576efb2e1
+    entity_id: switch.vls30_light_saber
+    domain: switch
+  mode: single
+- id: '1673706029444'
+  alias: VLS30 Armed
+  description: ''
+  trigger:
+  - platform: device
+    domain: alarm_control_panel
+    device_id: 00130f523184368505240b19dd0a6cec
+    entity_id: alarm_control_panel.vls30_alarm
+    type: armed_away
+  condition: []
+  action:
+  - service: timer.cancel
+    data: {}
+    target:
+      entity_id: timer.vls30_entry_timer
+  - service: climate.set_temperature
+    data:
+      temperature: 6
+    target:
+      entity_id: climate.vls30
+  - service: light.turn_off
+    data: {}
+    target:
+      area_id: vls30
+  mode: single
+- id: '1673723713621'
+  alias: VLS30 Saber Switch
+  description: ''
+  trigger:
+  - platform: device
+    type: turned_on
+    device_id: f35fc3c55e516b725437dc8576efb2e1
+    entity_id: switch.vls30_light_saber
+    domain: switch
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 5
+  condition: []
+  action:
+  - service: automation.turn_off
+    data:
+      stop_actions: false
+    target:
+      entity_id: automation.vls30_saber_switch
+  - type: turn_off
+    device_id: f35fc3c55e516b725437dc8576efb2e1
+    entity_id: switch.vls30_light_saber
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
+  - type: turn_on
+    device_id: f35fc3c55e516b725437dc8576efb2e1
+    entity_id: switch.vls30_light_saber
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
+  - type: turn_off
+    device_id: f35fc3c55e516b725437dc8576efb2e1
+    entity_id: switch.vls30_light_saber
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
+  - type: turn_on
+    device_id: f35fc3c55e516b725437dc8576efb2e1
+    entity_id: switch.vls30_light_saber
+    domain: switch
+  - service: automation.turn_on
+    data: {}
+    target:
+      entity_id: automation.vls30_saber_switch
+  mode: single

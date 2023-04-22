@@ -1,0 +1,9 @@
+motion_sensors:
+  name: Motion Sensors
+  entities:
+  - binary_sensor.dressing_motion
+  - binary_sensor.living_motion
+  - binary_sensor.mbedroom_motion
+  - binary_sensor.office_motion
+  - binary_sensor.vls12_door_motion
+  - binary_sensor.cinema_motion

@@ -1,0 +1,85 @@
+#################################################################
+## Ping sensors to check network connectivity/device state (TV)
+#################################################################
+
+  - alias: "Notify if any device is offline"
+    initial_state: true
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.tado
+        from: 'on'
+        to: 'off'
+    action:
+      service: notify.joris
+      data_template:
+        title: "Service offline"
+        message: "{{ trigger.to_state.attributes.friendly_name }} is offline"
+
+# When Tado goes offline for more than > 2 mins, restart it automatically
+  - alias: "Restart Tado when offline"
+    initial_state: true
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.tado
+        from: 'on'
+        to: 'off'
+        for:
+          seconds: 120
+    action:
+      - service: notify.joris
+        data_template:
+          title: "Restarting"
+          message: "{{ trigger.to_state.attributes.friendly_name }}"
+      - service: switch.turn_off
+        entity_id: "switch.tado_switch"
+      - delay: "00:00:30"
+      - service: switch.turn_on
+        entity_id: "switch.tado_switch"
+
+  - alias: "Notify if any device is back online"
+    initial_state: true
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.tado
+        from: 'off'
+        to: 'on'
+        for:
+          seconds: 60
+    action:
+      service: notify.joris
+      data_template:
+        title: "Service online"
+        message: "{{ trigger.to_state.attributes.friendly_name }} is back online"
+
+  - alias: "Television is on"
+    initial_state: true
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.living_tv
+        from: 'off'
+        to: 'on'
+        for:
+          seconds: 15
+    action:
+      - service: switch.turn_on
+        data:
+          entity_id: switch.living_tvaudio
+
+  - alias: "Television is off"
+    initial_state: true
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.living_tv
+        from: 'on'
+        to: 'off'
+        for:
+          seconds: 30
+    action:
+      - service: switch.turn_off
+        data:
+          entity_id: switch.living_tvaudio

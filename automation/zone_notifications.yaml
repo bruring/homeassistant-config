@@ -1,0 +1,16 @@
+#################################################################
+## Zone notifications
+#################################################################
+
+# Notify when Muk leaves Work
+  - alias: 'Leave Work notification'
+    trigger:
+      platform: zone
+      event: leave
+      zone: zone.work
+      entity_id: device_tracker.murielle
+    action:
+      service: notify.joris
+      data:
+        title: 'HA'
+        message: 'Muk left Work'

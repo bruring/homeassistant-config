@@ -1,0 +1,101 @@
+#################################################################
+## Turn on lights based on sunlight percentage
+#################################################################
+
+  - alias: Set dark outside on
+    trigger:
+      platform: numeric_state
+      entity_id: sensor.sunlight_pct
+      below: 15
+      for:
+        minutes: 4
+    action:
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.dark_outside
+
+  - alias: Set dark outside off
+    trigger:
+      platform: numeric_state
+      entity_id: sensor.sunlight_pct
+      above: 15
+      for:
+        minutes: 4
+    action:
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.dark_outside
+
+  - alias: Set dark inside on
+    trigger:
+      platform: numeric_state
+      entity_id: sensor.average_light_level_new
+      below: 40
+      for:
+        minutes: 4
+    action:
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.dark_inside
+
+  - alias: Set dark inside off
+    trigger:
+      platform: numeric_state
+      entity_id: sensor.average_light_level
+      above: 40
+      for:
+        minutes: 4
+    action:
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.dark_inside
+
+  - alias: Enable evening mode - dark outside 1 hrs before sunset
+    trigger:
+      platform: sun
+      event: sunset
+      offset: "-01:00:00"
+    action:
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.evening_mode
+
+  - alias: Disable evening mode - it's getting light
+    trigger:
+      platform: sun
+      event: sunrise
+    action:
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.evening_mode
+
+  - alias: Turn on lights when away and dark outside
+    trigger:
+      platform: state
+      entity_id: input_boolean.evening_mode
+      to: 'on'
+    condition:
+      - condition: state
+        entity_id: input_select.house_mode
+        state: 'away'
+    action:
+      - delay: "{{ range(0, 3600)|random }}"
+      - service: script.all_lights_away
+
+  - alias: Turn off lights at random time after 11pm when away and dark outside
+    trigger:
+      platform: time
+      at: '23:30:00'
+    condition:
+      - condition: state
+        entity_id: input_select.house_mode
+        state: 'away'
+    action:
+      - delay: "{{ range(0, 1800)|random }}"
+      - service: script.all_lights_off
+
+  - alias: Turn on lights when home and dark outside
+    trigger:
+      platform: state
+      entity_id: input_boolean.evening_mode
+      to: 'on'
+    condition:
+      - condition: state
+        entity_id: input_select.house_mode
+        state: 'home'
+    action:
+      - service: script.all_lights_on

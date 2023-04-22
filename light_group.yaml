@@ -1,0 +1,94 @@
+#################################################################
+## Light Groups
+#################################################################
+
+# Define this switch as a light source
+  - platform: switch
+    name: Living Robot
+    entity_id: switch.living_robot
+
+  - platform: switch
+    name: Garden
+    entity_id: switch.garden
+
+  - platform: switch
+    name: Christmas Tree
+    entity_id: switch.christmas_tree
+
+  - platform: switch
+    name: VLS30 Light Saber
+    entity_id: switch.vls30_light_saber
+
+  - platform: switch
+    name: VLS30 Light Guy
+    entity_id: switch.vls30_guy
+
+# Define Canvas as light source
+  - platform: template
+    lights:
+      living_canvas:
+        value_template: "{{ is_state('media_player.canvas', 'playing') }}"
+        friendly_name: "Living Canvas"
+        turn_on:
+          service: media_player.turn_on
+          data:
+            entity_id: media_player.canvas
+        turn_off:
+          service: media_player.turn_off
+          data:
+            entity_id: media_player.canvas
+
+  - platform: group
+    name: Living Lights
+    entities:
+      - light.bar
+      - light.couch_light
+      - light.living_main
+      - light.living_robot
+      - light.living_tv_left
+      - light.living_tv_right
+#      - light.christmas_tree
+      - light.lucellino
+
+  - platform: group
+    name: Cinema Lights
+    entities:
+      - light.cinema_main
+      - light.cinema_side
+      - light.hallway
+
+  - platform: group
+    name: Kitchen Lights
+    entities:
+      - light.kitchen_sink
+      - light.kitchen
+
+  - platform: group
+    name: Office Lights
+    entities:
+      - light.office_main
+      - light.office_wall
+      - light.desk
+      - light.wled_office
+      - light.office_side
+
+  - platform: group
+    name: Wardrobe Lights
+    entities:
+      - light.wardrobe
+      - light.dressing
+
+  - platform: group
+    name: Garden Lights
+    entities:
+      - light.garden
+
+  - platform: group
+    name: Master Bedroom Lights
+    entities:
+      - light.master_bedroom
+
+  - platform: group
+    name: Guest Bedroom Lights
+    entities:
+      - light.guest_bedroom

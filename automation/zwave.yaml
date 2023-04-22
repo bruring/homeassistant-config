@@ -1,0 +1,19 @@
+## Prevent blinking of the GreenWave switches
+
+  - alias: Refresh Z-Wave Devices every 2 hrs
+    trigger:
+      - platform: time_pattern
+        hours: /2
+    action:
+      - service: zwave_js.refresh_value
+        data:
+          entity_id: switch.bedje_joris
+      - service: zwave_js.refresh_value
+        data:
+          entity_id: switch.bedje_muk
+      - service: zwave_js.refresh_value
+        data:
+          entity_id: switch.garden
+      - service: zwave_js.refresh_value
+        data:
+          entity_id: switch.living_robot

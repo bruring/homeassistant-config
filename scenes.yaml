@@ -1,0 +1,134 @@
+## Scenes definition
+
+# Motion sensor controlled
+  - name: Wardrobe active
+    entities:
+      light.wardrobe:
+        state: on
+        brightness: 255
+      light.dressing:
+        state: on
+        brightness: 200
+
+  - name: Office active
+    entities:
+      light.office_main:
+        state: on
+        brightness: 107
+      light.office_wall:
+        state: on
+        brightness: 191
+      light.desk:
+        state: on
+        brightness: 204
+
+  - name: Office inactive
+    entities:
+      light.office_main:
+        state: on
+        brightness: 21
+      light.office_wall:
+        state: on
+        brightness: 88
+      light.desk:
+        state: on
+        brightness: 90
+
+  - name: Movie mode
+    entities:
+      light.living_tv_right:
+        state: on
+        brightness: 90
+      light.living_tv_left:
+        state: on
+        brightness: 90
+      light.bar:
+        state: on
+        brightness: 49
+      light.living_main:
+        state: on
+        brightness: 32
+      light.kitchen_lights:
+        state: on
+        brightness: 139
+      light.office_main:
+        state: on
+        brightness: 10
+      light.office_wall:
+        state: on
+        brightness: 126
+
+  - name: Lights VLS2 on
+    entities:
+      light.living_lights:
+        state: on
+      light.kitchen_lights:
+        state: on
+      light.office_lights:
+        state: on
+      light.wardrobe_lights:
+        state: on
+      light.garden_lights:
+        state: on
+
+  - name: Lights VLS2 off
+    entities:
+      light.living_lights:
+        state: off
+      light.kitchen_lights:
+        state: off
+      light.office_lights:
+        state: off
+      light.wardrobe_lights:
+        state: off
+      light.garden_lights:
+        state: off
+
+  - name: Lights VLS12 on
+    entities:
+      light.cinema_lights:
+        state: on
+
+  - name: Lights VLS12 off
+    entities:
+      light.cinema_lights:
+        state: off
+
+  - name: Cinema On
+    entities:
+      light.cinema_main:
+        state: on
+        brightness: 64
+      light.cinema_side:
+        state: on
+        brightness: 110
+      light.hallway:
+        state: on
+        brightness: 124
+      light.kitchen:
+        state: on
+        brightness: 204
+
+  - name: Cinema Dim Normal
+    entities:
+      light.cinema_main:
+        state: on
+        brightness: 64
+
+  - name: Cinema Dim Movie
+    entities:
+      light.cinema_main:
+        state: off
+      light.cinema_side:
+        state: on
+        brightness: 38
+      light.hallway:
+        state: off
+      light.kitchen:
+        state: off
+
+  - name: Cinema Dim Sport
+    entities:
+      light.cinema_main:
+        state: on
+        brightness: 192
